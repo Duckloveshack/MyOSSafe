@@ -1,5 +1,5 @@
 @echo off
-set version=2.2.0
+set version=2.3.0
 set TestSDK=Software
 set TestSDK2=DevelopmentKit
 set Hint=The Password is %PassReal%
@@ -73,7 +73,7 @@ echo 		M::::::M               M::::::M         y:::::y          OO:::::::::::::O
 echo 		M::::::M               M::::::M        y:::::y             OO:::::::::OO   S:::::::::::::::SS 
 echo 		MMMMMMMM               MMMMMMMM       y:::::y                OOOOOOOOO      SSSSSSSSSSSSSSS   
 echo 						     y:::::y                                                  
-echo 						    y:::::y                                                   
+echo 						    y:::::y                  Copyright (C) 2020 DuckLovesHack 
 echo 						   y:::::y                                                    
 echo 						  y:::::y                                                     
 echo 						 yyyyyyy                                                      
@@ -112,6 +112,21 @@ if %PasswordOn% == 100 (
 if %PasswordOn% == 123 (
 	goto desktop
 )
+:ERRSETUP
+cls
+title MyKernel
+echo                MyOS v.%version%
+echo.
+echo An instance of MyOS Setup is running. Please wait till
+echo the setup finishes so all the files will be installed
+echo and MyOS will boot without any incompatibility
+echo errors. 
+echo.
+echo.
+echo.
+echo Press [ENTER] to Shut Down.
+pause >nul
+exit
 :errorcode
 cls
 title MyKernel
@@ -423,6 +438,9 @@ echo Version 2.2.0
 echo + Fixed PassProtect Open Function
 echo + PassProtect needs confirmation to delete passwords.
 echo + Added hints for COVID-19
+echo Version 2.3.0
+echo + Update was overhauled
+echo + About MyOS
 pause >nul
 goto desktop
 :3PSTORE
@@ -505,7 +523,7 @@ if %N% == 1 goto TEXTMENU
 goto LinesText
 :LinesText
 cls
-echo How many lines do you want the file to have? (1-100)
+echo How many lines do you want the file to have? (1-60)
 set /p Lines=Lines: 
 if %Lines% GTR 0 (
 	if %Lines% LSS 61 (
@@ -571,21 +589,97 @@ echo Settings - Version 2.0.0
 echo 1 = Change Time and Date
 echo 2 = System Colour
 echo 3 = Users
-echo 4 = Update
-echo 5 = Applications
-echo 6 = Settings Configurations
-echo 7 = Exit
+echo 4 = Check for Updates
+echo 5 = About MYOS
+echo 6 = Applications
+echo 7 = Settings Configurations
+echo 8 = Exit
 set /p Choice=Command 
 if %Choice% == 1 goto ctimeadmin
 if %Choice% == 2 goto ccolor
 if %Choice% == 3 goto Us
-if %Choice% == 4 goto Update
-if %Choice% == 5 goto SetAp
-if %Choice% == 6 goto SetConfig
-if %Choice% == 7 goto desktop
+if %Choice% == 4 goto CheckUpdate
+if %Choice% == 5 goto AboutMYOS
+if %Choice% == 6 goto SetAp
+if %Choice% == 7 goto SetConfig
+if %Choice% == 8 goto desktop
 echo Invalid Command. Choose between [1], [2] or [3].
 timeout /T 1 /NOBREAK >nul
 goto SETTINGS
+:AboutMYOS
+set WINOS="UNDEFINED OS"
+ver | findstr /i "6\.0\." > nul
+if %ERRORLEVEL% EQU 0 (
+set WINOS="Microsoft Windows Vista"
+)
+ver | findstr /i "6\.1\." > nul
+if %ERRORLEVEL% EQU 0 (
+set WINOS="Microsoft Windows 7"
+)
+ver | findstr /i "6\.2\." > nul
+if %ERRORLEVEL% EQU 0 (
+set WINOS="Microsoft Windows 8"
+)
+ver | findstr /i "6\.3\." > nul
+if %ERRORLEVEL% EQU 0 (
+set WINOS="Microsoft Windows 8.1"
+)
+ver | findstr /i "10\.0\." > nul
+if %ERRORLEVEL% EQU 0 (
+set WINOS="Microsoft Windows 10"
+)
+cls
+echo MyOS - Settings - About
+echo.
+echo MyOS Version: %version%
+echo System Type: %OS%
+echo Operating System: %WINOS%
+echo CPU information:
+wmic cpu get name, caption, maxclockspeed, numberofcores, status
+echo SYSTEM Folder: %windir%
+echo.
+echo Press [ENTER] to exit
+pause >nul
+goto SETTINGS
+:CheckUpdate
+Ping www.google.com -n 1 -w 1000 >nul
+cls
+if errorlevel 1 (
+	echo The COMPUTER is not connected to the internet. Try checking updates later.
+	echo.
+	echo Press [ENTER] to exit
+	pause >nul
+	goto SETTINGS
+)
+echo Connecting to the server...
+bitsadmin /transfer myDownloadJob /download /priority normal https://github.com/Duckloveshack/MyOS/raw/CHECKVERSION/CheckVersion.txt %cd%\CheckVersion.txt >nul
+(
+echo %version%
+) > CurrentVersion.txt
+if not exist CheckVersion.txt (
+	echo Check Failed. ERROR: File renamed or deleted.
+	echo Press [ENTER] to exit
+	pause >nul
+	goto SETTINGS
+)
+cls
+fc CheckVersion.txt CurrentVersion.txt >nul
+if errorlevel 1 (
+	del CheckVersion.txt
+	del CurrentVersion.txt
+	echo Your version of MyOS is outdated. Would you like to update? Y/N
+	choice >nul
+	if errorlevel 1 goto UpdateTest
+	if errorlevel 2 goto Settings
+	else goto UpdateTest
+) else (
+	del CheckVersion.txt
+	del CurrentVersion.txt
+	echo MyOS is up to date.
+	echo Press [ENTER] to exit
+	pause >nul
+	goto SETTINGS
+)
 :SetConfig
 cls
 echo Settings - Settings Configurations
@@ -1283,7 +1377,7 @@ if %BPPassProtect% == 1 (
 if %mp3pro% == 1 goto MP3Player
 if %mp3pro% == 2 goto OLDMP3Player
 cls
-echo Welcome to MyOS 2.0! Here, you can choose the type of MP3 Player that is needed for you.
+echo Welcome to MyOS 2.3! Here, you can choose the type of MP3 Player that is needed for you.
 echo 1 = Launch MP3 Player (Background)
 echo 2 = Launch MP3 Player (WMP)
 echo 3 = Set MP3 Player Priority (It can be changed in Settings)
@@ -2335,6 +2429,9 @@ echo Version 2.2.0
 echo + Fixed PassProtect Open Function
 echo + PassProtect needs confirmation to delete passwords.
 echo + Added hints for COVID-19
+echo Version 2.3.0
+echo + Update was overhauled
+echo + About MyOS
 pause >nul
 goto gdesk
 :g3plaunch
@@ -2691,7 +2788,7 @@ if %Choice% == 2 goto schang
 if %Choice% == 3 goto sset
 if %Choice% == 4 goto stextp
 if %Choice% == 5 goto s3rdMart
-if %Choice% == 6 goto FIX
+if %Choice% == 6 goto UpdateTest
 if %Choice% == 7 goto boot
 echo Invalid Command.
 timeout /T 1 /NOBREAK >nul
@@ -2839,6 +2936,9 @@ echo Version 2.2.0
 echo + Fixed PassProtect Open Function
 echo + PassProtect needs confirmation to delete passwords.
 echo + Added hints for COVID-19
+echo Version 2.3.0
+echo + Update was overhauled
+echo + About MyOS
 pause >nul
 goto sdeskt
 :s3rdMart
@@ -3003,98 +3103,64 @@ set /p Color=Your Colour:
 color %Color%
 timeout /T 0 /NOBREAK >nul
 goto sset
-:fix
+:UpdateTEST
 cls
-echo This Recovery Option needs internet connection and access to web browser. Do you want to continue?
-echo Y/N
-set /P Choice=
-if %Choice% == Y goto fixstart
-if %Choice% == N goto sdeskt
-echo Invalid Choice. Exiting Operation
+echo Starting Update.
 timeout /T 1 /NOBREAK >nul
-goto sdeskt
-:fixstart
-cd C:\Users\danie\Desktop
 cls
-echo Starting the Fix. You CANNOT use the system. Do NOT close your Browser or Command Prompt while the system is doing the recovery. This recovery option will update the installer and product key as well.
-timeout /T 2 /NOBREAK >nul
-echo Downloading the latest version of MyOS...
-start https://github.com/Duckloveshack/MyOSSafe/releases/download/latest/MyOSRecovery.bat
-start https://github.com/Duckloveshack/MyOSSafe/releases/download/latest/MyOSRecoverySetup.bat
-start https://github.com/Duckloveshack/MyOSSafe/releases/download/latest/MyOSRecoveryProductKey.txt
-echo Now Trust the download(s). The Windows Defender may mistakely understand the MyOS as a virus. Press [Enter] to continue.
-pause >nul
-RecoveryMyOS.bat
-exit
-:Update
-cls
-echo The Update needs the sub-system reboot. This process requires internet connection and access to Web. Do you want to proceed?
-echo Yes=Y  No=N
-set /P Choice=
-if %Choice% == Y goto UpdStartReb
-if %Choice% == N goto desktop
-echo Incorrect symbol. Please try again
+echo Starting Update..
 timeout /T 1 /NOBREAK >nul
-goto update
-:UpdStartReb
-title Updating MyOS...
 cls
+echo Starting Update...
+timeout /T 1 /NOBREAK >nul
+cls
+echo Starting Update....
+timeout /T 1 /NOBREAK >nul
+cls
+echo Starting Update.....
+timeout /T 1 /NOBREAK >nul
+cls
+echo Starting Update......
+timeout /T 1 /NOBREAK >nul
+cls
+title MyKERNEL
 echo MyKERNEL version 1.2.0
 timeout /T 1 /NOBREAK >nul
 echo MyOS is found at /system
 timeout /T 1 /NOBREAK >nul
-echo MyOS/%U%:
-timeout /T 0 /NOBREAK >nul
+echo Booting Up...
+timeout /T 1 /NOBREAK >nul
 cls
-echo MyKERNEL version 1.2.0
-echo MyOS is found at /system
-echo MyOS/%U%: upd
-timeout /T 2 /NOBREAK >nul
-cls
-goto UpdStart
-:UpdStart
-cd C:\Users\danie\Desktop
-cls
-echo Starting Update
-echo DO NOT CLOSE THE COMMAND PROMPT, THE BROWSER OR SHUT DOWN WINDOWS!
-start https://github.com/Duckloveshack/MyOSSafe/releases/download/latest/MyOSRecovery.bat
-echo Now Trust the download. The Windows Defender may mistakely understand the MyOS as a virus. Press [Enter] to continue.
+title MyOS
+echo 		MMMMMMMM               MMMMMMMM                              OOOOOOOOO        SSSSSSSSSSSSSSS 
+echo 		M:::::::M             M:::::::M                            OO:::::::::OO    SS:::::::::::::::S
+echo 		M::::::::M           M::::::::M                          OO:::::::::::::OO S:::::SSSSSS::::::S
+echo 		M:::::::::M         M:::::::::M                         O:::::::OOO:::::::OS:::::S     SSSSSSS
+echo 		M::::::::::M       M::::::::::Myyyyyyy           yyyyyyyO::::::O   O::::::OS:::::S            
+echo 		M:::::::::::M     M:::::::::::M y:::::y         y:::::y O:::::O     O:::::OS:::::S            
+echo 		M:::::::M::::M   M::::M:::::::M  y:::::y       y:::::y  O:::::O     O:::::O S::::SSSS         
+echo 		M::::::M M::::M M::::M M::::::M   y:::::y     y:::::y   O:::::O     O:::::O  SS::::::SSSSS    
+echo 		M::::::M  M::::M::::M  M::::::M    y:::::y   y:::::y    O:::::O     O:::::O    SSS::::::::SS  
+echo 		M::::::M   M:::::::M   M::::::M     y:::::y y:::::y     O:::::O     O:::::O       SSSSSS::::S 
+echo 		M::::::M    M:::::M    M::::::M      y:::::y:::::y      O:::::O     O:::::O            S:::::S
+echo 		M::::::M     MMMMM     M::::::M       y:::::::::y       O::::::O   O::::::O            S:::::S
+echo 		M::::::M               M::::::M        y:::::::y        O:::::::OOO:::::::OSSSSSSS     S:::::S
+echo 		M::::::M               M::::::M         y:::::y          OO:::::::::::::OO S::::::SSSSSS:::::S
+echo 		M::::::M               M::::::M        y:::::y             OO:::::::::OO   S:::::::::::::::SS 
+echo 		MMMMMMMM               MMMMMMMM       y:::::y                OOOOOOOOO      SSSSSSSSSSSSSSS   
+echo 						     y:::::y                                                  
+echo 						    y:::::y                  Copyright (C) 2020 DuckLovesHack 
+echo 						   y:::::y                                                    
+echo 						  y:::::y                                                     
+echo 						 yyyyyyy                                                      
+timeout /T 1 /NOBREAK >nul
+echo Starting MyOS with internet capabilities...
+timeout /T 3 /NOBREAK >nul
+echo Updating MyOS %version%...
+timeout /T 1 /NOBREAK >nul
+bitsadmin /transfer myDownloadJob /download /priority normal https://github.com/Duckloveshack/MyOSSafe/raw/master/MyOSRecoverySetup.bat "%cd%\MyOS Installation".bat >nul
+bitsadmin /transfer myDownloadJob /download /priority normal https://github.com/Duckloveshack/MyOSSafe/raw/master/MyOSRecoveryProductKey.bat "%cd%\OEM Key for MyOS".txt >nul
+bitsadmin /transfer myDownloadJob /download /priority normal https://github.com/Duckloveshack/MyOSSafe/raw/master/MyOSRecovery.bat %cd%\MyOS.bat >nul
+echo MyOS was succesfully updated. Please close this window and launch MyOS once again.
 pause >nul
-cls
-echo Do you want to update the Setup?
-echo Yes=Y  No=N
-set /P Choice=
-if %Choice% == Y goto UpdStartSetup
-if %Choice% == N goto UpdStartQ
-echo Invalid key. Aborting Process
-goto BOOT
-:UpdStartSetup
-cls
-echo Starting Update
-echo DO NOT CLOSE THE COMMAND PROMPT, THE BROWSER OR SHUT DOWN WINDOWS!
-start https://github.com/Duckloveshack/MyOSSafe/releases/download/latest/MyOSRecoverySetup.bat
-echo Now Trust the download. The Windows Defender may mistakely understand the MyOS Setup as a virus. Press [Enter] to continue.
-pause >nul
-:UpdStartQ
-cls
-echo Do you want to update the Product Key?
-echo Yes=Y  No=N
-set /P Choice=
-if %Choice% == Y goto UpdStartKey
-if %Choice% == N goto UpdFinish
-echo Invalid key. Aborting Process
-goto BOOT
-:UpdStartKey
-cls
-echo Starting Update
-echo DO NOT CLOSE THE COMMAND PROMPT, THE BROWSER OR SHUT DOWN WINDOWS!
-start https://github.com/Duckloveshack/MyOSSafe/releases/download/latest/MyOSRecoveryProductKey.bat
-echo Now Trust the download. The Windows Defender may mistakely understand the MyOS Product Key as a virus. Press [Enter] to continue.
-pause >nul
-:UpdFinish
-cls
-echo Starting the Recovery Process...
-echo This will shut down MyOS.
-timeout /T 2 /NOBREAK >nul
-RecoveryMyOS.bat
-exit
+timeout /T -1 /NOBREAK >nul

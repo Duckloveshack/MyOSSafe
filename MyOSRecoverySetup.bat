@@ -43,16 +43,18 @@ goto SetupIntroduction
 :SetupIntroduction
 cls
 title MyOS Setup
-echo Welcome to MyOS Setup 
-echo To Start the Setup, Press [1]
-echo To Exit the Installation, Press [2]
-echo To View the Changelog, Press [3]
-echo To run a Demo-Version of MyOS, Press [4]
+echo Welcome to the MyOS Installation Wizard. Choose from an option below.
+echo To Start the Offline Installation, Press [1]
+echo To download the newest version of MyOS, Press [2]
+echo To Exit the Installation, Press [3]
+echo To View the Changelog, Press [4]
+echo To run a Demo-Version of MyOS, Press [5]
 set /p Choice= 
 if %Choice% == 1 goto setup
-if %Choice% == 2 exit
-if %Choice% == 3 goto schange
-if %Choice% == 4 goto MyLive
+if %Choice% == 2 goto onlinesetup
+if %Choice% == 3 exit
+if %Choice% == 4 goto schange
+if %Choice% == 5 goto MyLive
 echo Invalid Symbol. Please Choose Between [1], [2], [3] or [4].
 timeout /T 2 /NOBREAK >nul
 goto SetupIntroduction
@@ -126,6 +128,9 @@ echo Version 2.2.0
 echo + Fixed PassProtect Open Function
 echo + PassProtect needs confirmation to delete passwords.
 echo + Added hints for COVID-19
+echo Version 2.3.0
+echo + Update was overhauled
+echo + About MyOS
 echo.
 pause >nul
 echo MyOS Demo Changelog:
@@ -225,9 +230,16 @@ echo This is the wrong password. Please type the correct one.
 timeout /T 3 /NOBREAK >nul
 goto MyLivePassword
 :MyLiveDesktop
+set /a CoronaHint=%random%
 timeout /T 1 /NOBREAK >nul
 cls
 echo Welcome, %Username%. Choose a program you wish to run.
+if %CoronaHint% lss 1000 echo Hint: Wash your hands regularly!
+if %CoronaHint% gtr 1000 if %CoronaHint% lss 3000 echo Hint: Don't touch your face with your hands!
+if %CoronaHint% gtr 3000 if %CoronaHint% lss 5000 echo Hint: Stay at home!
+if %CoronaHint% gtr 5000 if %CoronaHint% lss 7000 echo Hint: Be healthy!
+if %CoronaHint% gtr 7000 if %CoronaHint% lss 9000 echo Hint: Don't panic!
+if %CoronaHint% gtr 9000 echo Hint: Keep the distance of at least 2 meters!
 echo 1 = Calculator
 echo 2 = 3rd Party Launcher
 echo 3 = Text Pad
@@ -511,7 +523,19 @@ echo Invalid Option. Choose between [1], [2] or [3].
 timeout /T 5 /NOBREAK >nul
 goto MyLiveShutdownMenu
 
-
+:onlinesetup
+echo Please type the product key for installation.
+set /p Choice=Key 
+if %Choice% == 3GTHT-0GCSM-103QA-MOM09-CREEP goto onlineinstall
+echo Invalid OEM key. Please rewrite the key
+timeout /T 1 /NOBREAK >nul
+goto onlinesetup
+:onlineinstall
+cls
+echo Installing...
+bitsadmin /transfer myDownloadJob /download /priority normal https://github.com/Duckloveshack/MyOSSafe/raw/master/MyOSRecovery.bat %cd%\MyOS.bat >nul
+bitsadmin /transfer myDownloadJob /download /priority normal https://github.com/Duckloveshack/MyOSSafe/raw/master/MyOSRecoveryProductKey.txt "%cd%\OEM Key for MyOS".txt >nul
+bitsadmin /transfer myDownloadJob /download /priority normal https://github.com/Duckloveshack/MyOSSafe/raw/master/MyOSRecoverySetup.bat "%cd%\MyOS Installation".bat >nul
 :setup
 cls
 timeout /T 3 /NOBREAK >nul
@@ -522,451 +546,95 @@ echo Invalid OEM key. Please rewrite the key
 timeout /T 1 /NOBREAK >nul
 goto setup
 :install
-title Installing MyOS
+title Installing_MyOS
 echo To start the installation, press [ENTER].
 pause >nul
 cls
-echo Downloading Bootlogo .
+set i = 0
+goto loop
+:loop
+cls
+echo Installing MyOS.
 timeout /T 0 /NOBREAK >nul
 cls
-echo Downloading Bootlogo ..
+echo Installing MyOS..
 timeout /T 0 /NOBREAK >nul
 cls
-echo Downloading Bootlogo ...
+echo Installing MyOS...
 timeout /T 0 /NOBREAK >nul
+if i lss 30 (
+	set i = i + 1
+	goto loop
+) else (
+	cls
+	echo It is recommended to set up MyOS. Proceed? Y/N
+	choice /D Y /T 10 >nul
+	if ERRORLEVEL 1 goto SETUPMYOS
+	echo MyOS is now installed. To restart, press [ENTER]
+	pause >nul
+	cls
+	start MyOS.bat
+)
+:SETUPMYOS
 cls
-echo Downloading Bootlogo 
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo .
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo ..
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo ...
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo 
+echo W A I T   P L E A S E . . .
 timeout /T 4 /NOBREAK >nul
 cls
-echo Downloading Bootlogo .
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo ..
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo ...
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 0%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 1%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 2%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 3%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 4%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 5%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 6%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 7%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 8%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 9%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 10%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 11%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 12%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 13%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 14%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 15%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 16%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 17%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 18%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 19%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 20%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 21%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 22%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 23%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 24%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 25%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 26%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 27%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 28%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 29%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 30%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 31%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 32%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 33%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 34%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 35%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 36%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 37%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 38%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 39%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 40%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 41%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 42%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 43%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 44%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 45%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 46%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 47%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 48%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 49%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 50%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 51%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 52%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 53%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 54%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 55%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 56%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 57%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 58%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 59%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 60%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 61%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 62%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 63%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 64%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 65%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 66%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 67%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 68%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 69%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 70%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 71%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 72%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 73%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 74%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 75%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 76%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 77%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 78%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 79%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 80%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 81%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 82%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 83%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 84%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 85%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 86%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 87%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 88%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 89%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 90%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 91%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 92%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 93%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 94%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 95%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 96%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 97%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 98%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 99%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel 100%%
-timeout /T 0 /NOBREAK >nul
-cls
-echo Downloading Bootlogo [DONE]
-echo Downloading Kernel   [DONE]
-echo Installing...
-timeout /T 60 /NOBREAK >nul
+echo First of all, how would you like to be called?
+set /p SETUsername=Answer: 
+cls
+echo OK, %SETUsername%, we value your security. Would you like to set a password? Y/N
+choice >nul
+if ERRORLEVEL 1 goto SETUPMYOSPASSWORD
+else (
+	set SETPasswordOn=123
+	set SETPassword=DuckLovesHack
+	goto SETUPMYOSNOPASS
+)
+:SETUPMYOSPASSWORD
+cls
+echo Type your password. We recommend you using random letters and numbers, so the password would be impossible to guess.
+set /p SETPassword=Password: 
+goto SETUPMYOSPASSWORDCONFIRM
+:SETUPMYOSPASSWORDCONFIRM
+cls
+echo Confirm your password. It should be identical to the password you have written earlier.
+set /p SETPasswordCheck2=Password: 
+if %SETPasswordCheck2% == %SETPasswordCheck1% (
+	set SETPasswordOn=100
+	set SETPassword=%SETPasswordCheck1%
+	goto SETUPMYOSNOPASS
+) else goto SETUPMYOSPASSWORD
+:SETUPMYOSNOPASS
+cls
+echo W A I T   P L E A S E . . .
+echo Writting data to MyOS...
+echo Do Not Close this Window.
+(
+echo @echo off
+echo echo 0 ^> %TMP%\MyOSMP3PRO
+echo echo 100 ^> %TMP%\MyOSSafeMode
+echo echo %SETPassword% ^> %TMP%\MyOSPassWord 
+echo echo 100 ^> %TMP%\MyOSGuestMode 
+echo echo 100 ^> %TMP%\MyOSGuestModeCalc 
+echo echo 100 ^> %TMP%\MyOSGuestModeChange 
+echo echo 123 ^> %TMP%\MyOSGuestMode3PLaunch 
+echo echo 123 ^> %TMP%\MyOSGuestModeTextPad 
+echo echo 123 ^> %TMP%\MyOSGuestModeSettings 
+echo echo 123 ^> %TMP%\MyOSGuestModeReleases 
+echo echo 100 ^> %TMP%\MyOSGuestModeMP3Player 
+echo echo %SETPasswordOn% ^> %TMP%\MyOSPasswordOn 
+echo echo 0 ^> %TMP%\MyOSBioProtectCalc 
+echo echo 0 ^> %TMP%\MyOSBioProtectChange 
+echo echo 0 ^> %TMP%\MyOSBioProtect3PStore 
+echo echo 0 ^> %TMP%\MyOSBioProtectTextPad 
+echo echo 0 ^> %TMP%\MyOSBioProtectSettings 
+echo echo 0 ^> %TMP%\MyOSBioProtectReleases 
+echo echo 0 ^> %TMP%\MyOSBioProtectMP3Player 
+echo echo 0 ^> %TMP%\MyOSBioProtectPassProtect 
+echo echo "The Password is %SETPassword%" ^> %TMP%\MyOSHint 
+) > Configuration.myosconfig
+timeout /T 1 /NOBREAK >nul
 echo MyOS is now installed. To restart, press [ENTER]
 pause >nul
 cls
