@@ -1,5 +1,5 @@
 @echo off
-set version=2.3.0
+set version=2.4.0
 set TestSDK=Software
 set TestSDK2=DevelopmentKit
 set Hint=The Password is %PassReal%
@@ -112,21 +112,6 @@ if %PasswordOn% == 100 (
 if %PasswordOn% == 123 (
 	goto desktop
 )
-:ERRSETUP
-cls
-title MyKernel
-echo                MyOS v.%version%
-echo.
-echo An instance of MyOS Setup is running. Please wait till
-echo the setup finishes so all the files will be installed
-echo and MyOS will boot without any incompatibility
-echo errors. 
-echo.
-echo.
-echo.
-echo Press [ENTER] to Shut Down.
-pause >nul
-exit
 :errorcode
 cls
 title MyKernel
@@ -177,7 +162,7 @@ if %CoronaHint% gtr 7000 if %CoronaHint% lss 9000 echo Hint: Don't panic!
 if %CoronaHint% gtr 9000 echo Hint: Keep the distance of at least 2 meters!
 echo 1 = Calculator             7 = GitHub Releases
 echo 2 = Changelog              8 = BioProtect
-echo 3 = 3rd Party Launcher     9 = MP3 Player
+echo 3 = 3rd Party Store        9 = MP3 Player
 echo 4 = Text Pad               10 = PassProtect
 find "%TestSDK%%TestSDK2%" MyOS.bat >nul && (
 	echo 5 = Settings               11 = Software Development Kit
@@ -230,7 +215,7 @@ if %BPChange% == 0 goto CHANGE
 if %BP3PStore% == 1 (
 	cls
 	echo BioProtect
-	echo You need to confirm yourself to get access to 3RD PARTY APP LAUNCHER
+	echo You need to confirm yourself to get access to 3RD PARTY STORE
 	set /p PassCheck=Password: 
 	if %PassCheck% == %PassReal% goto 3PSTORE
 	echo The Password is invalid. Aborting operation...
@@ -306,15 +291,19 @@ echo 1 = Addition
 echo 2 = Substraction
 echo 3 = Multiplication
 echo 4 = Division
-echo 5 = Multi-Solve
-echo 6 = Exit
+echo 5 = Power
+echo 6 = MOD
+echo 7 = Multi-Solve
+echo 8 = Exit
 set /p Sign=Number 
 if %Sign% == 1 goto add
 if %Sign% == 2 goto substr
 if %Sign% == 3 goto multi
 if %Sign% == 4 goto div
-if %Sign% == 5 goto mulso
-if %Sign% == 6 goto desktop
+if %Sign% == 5 goto power
+if %Sign% == 6 goto mod
+if %Sign% == 7 goto mulso
+if %Sign% == 8 goto desktop
 echo Unknown command. Please choose a correct command.
 timeout /T 1 /NOBREAK >nul
 goto CALC
@@ -324,7 +313,7 @@ echo Please choose 2 numbers you wish to add
 set /p num1=
 set /p num2=%num1%+
 set /a Answer=%num1%+%num2%
-echo %num1%+%num2%=%answer%
+echo %num1%+%num2%=%Answer%
 pause >nul
 goto CALC
 :substr
@@ -333,7 +322,7 @@ echo Please choose 2 numbers you wish to substract
 set /p num1=
 set /p num2=%num1%-
 set /a Answer=%num1%-%num2%
-echo %num1%-%num2%=%answer%
+echo %num1%-%num2%=%Answer%
 pause >nul
 goto CALC
 :multi
@@ -342,7 +331,7 @@ echo Please choose 2 numbers you wish to multiply
 set /p num1=
 set /p num2=%num1%*
 set /a Answer=%num1%*%num2%
-echo %num1%*%num2%=%answer%
+echo %num1%*%num2%=%Answer%
 pause >nul
 goto CALC
 :div
@@ -351,7 +340,26 @@ echo Please choose 2 numbers you wish to divide
 set /p num1=
 set /p num2=%num1%/
 set /a Answer=%num1%/%num2%
-echo %num1%/%num2%=%answer%
+echo %num1%/%num2%=%Answer%
+pause >nul
+goto CALC
+:power
+cls
+echo Please choose 2 numbers you wish to power
+set /p num2=
+set /p num1=%num2%^^
+set /a Answer=1
+FOR /L %%i IN (1,1,%num1%) DO SET /A Answer*=%num2%
+echo %num2%^^%num1%=%Answer%
+pause >nul
+goto CALC
+:mod
+cls
+echo Please choose 2 numbers you wish to MOD
+set /p num1=
+set /p num2=%num1%%%
+set /a Answer=%num1% %% %num2%
+echo %num1%%%%num2%=%Answer%
 pause >nul
 goto CALC
 :mulso
@@ -441,6 +449,8 @@ echo + Added hints for COVID-19
 echo Version 2.3.0
 echo + Update was overhauled
 echo + About MyOS
+echo Version 2.4.0
+echo + 3rd Party Launcher was changed to 3rd Party Store
 pause >nul
 goto desktop
 :3PSTORE
@@ -459,32 +469,62 @@ if exist "MyOS.bat" (
 		cd "MyOS Applications"
 	)
 )
-title MyOS - 3rd Party App Launcher
-echo 3rd Party App Launcher Version 1.0.0
-echo Please choose an application to run. (Without file extension) (Type [1] to exit)
-dir /b
+title MyOS - 3rd Party Store
+echo 3rd Party Store Version 1.0.0
+echo Please choose an application to run. (Type [1] to exit)
+bitsadmin /transfer myDownloadJob https://github.com/Duckloveshack/MyOS3PStore/raw/master/list.myos "%cd%\list.myos" >nul
+type list.myos
 set /p App=App Name: 
-if %App% == 1 goto desktop
-if not exist %App%.bat (
-	if not exist %App%.cmd (
-		echo This application does not exist. Please choose another one.
-		timeout /T 1 /NOBREAK >nul
-		goto 3PSTORE
+if %App% == 1 (
+	del list.myos
+	goto desktop
+)
+findstr %App% list.myos >nul
+if ERRORLEVEL 1 (
+	echo This app is not found!
+	timeout /t 1 /nobreak >nul
+	goto 3PSTORE
+) else (
+	if exist %App%.bat (
+		bitsadmin /transfer myDownloadJob https://github.com/Duckloveshack/MyOS3PStore/raw/master/%App%.bat "%cd%\%App%-Newest.bat" >nul
+		fc %App%.bat %App%-Newest.bat >nul
+		if ERRORLEVEL 1 (
+			goto updateapp
+
+		) else (
+			del %App%-Newest.bat /s /q >nul
+			cls
+			echo Launching %App%.bat...
+			timeout /t 1 /nobreak >nul
+			start %App%.bat
+			goto Desktop
+		)
+	) else (
+		cls
+		echo Downloading %App%.bat
+		bitsadmin /transfer myDownloadJob https://github.com/Duckloveshack/MyOS3PStore/raw/master/%App%.bat "%cd%\%App%.bat" >nul
+		pause
+		echo Launching %App%.bat
+		timeout /t 1 /nobreak >nul
+		start %App%.bat
+		goto Desktop
 	)
 )
-if exist %App%.cmd (
-	start %App%.cmd
-)
-if exist %App%.bat (
+:updateapp
+cls
+echo This app is out of date. Update it to proceed.
+echo 1 = Update
+echo 2 = Exit
+set /p Choice=Choice: 
+if %Choice% == 1 (
+	del %App%.bat
+	rename %App%-Newest.bat %App%.bat
 	start %App%.bat
+	goto Desktop
 )
-if exist %App%.cmd (
-	if %App% == OrangeInstaller goto errorORANGE
-	if %App% == OrangeInstallerV1.5.0 goto errorORANGE
-	if %App% == OrangeInstallerV1.6.0 goto errorORANGE
-	if %App% == pos1xeye goto errorORANGE
+if %Choice% == 2 (
+	goto Desktop
 )
-goto Desktop
 :TEXTMENU
 cls
 if exist "MyOS.bat" (
@@ -558,7 +598,9 @@ dir /b
 set /p open=File Name 
 if %open% == 1 goto TEXTMENU
 if exist %open%.txt (
-	notepad %open%
+	cls
+	echo --- %open%.txt
+	type %open%.txt
 	pause >nul
 	goto TEXTMENU
 ) else (
@@ -670,7 +712,7 @@ if errorlevel 1 (
 	echo Your version of MyOS is outdated. Would you like to update? Y/N
 	choice >nul
 	if errorlevel 1 goto UpdateTest
-	if errorlevel 2 goto Settings
+	if errorlevel 0 goto Settings
 	else goto UpdateTest
 ) else (
 	del CheckVersion.txt
@@ -1252,10 +1294,10 @@ if %BPChange% == 1 (
 	echo 2 = Changelog - Protected
 )
 if %BP3PStore% == 0 (
-	echo 3 = 3rd Party App Launcher - UnProtected
+	echo 3 = 3rd Party Store - UnProtected
 )
 if %BP3PStore% == 1 (
-	echo 3 = 3rd Party App Launcher - Protected
+	echo 3 = 3rd Party Store - Protected
 )
 if %BPTextPad% == 0 (
 	echo 4 = Text Pad - UnProtected
@@ -2103,64 +2145,6 @@ find "%TestSDK%%TestSDK2%" MyOS.bat && (
 	set U=USER
 	goto desktop
 )
-:errorORANGE
-timeout /T 3 /NOBREAK >nul
-cls
-echo FAIL: %app% Is Uncompatible
-timeout /T 0 /NOBREAK >nul
-echo FAIL: MyOS Version %version% is too new.
-timeout /T 5 /NOBREAK >nul
-echo Trying to keep MyOS awake ^|
-timeout /T 0 /NOBREAK >nul
-cls
-echo FAIL: %app% Is Uncompatible
-echo FAIL: MyOS Version %version% is too new.
-echo Trying to keep MyOS awake \
-timeout /T 0 /NOBREAK >nul
-cls
-echo FAIL: %app% Is Uncompatible
-echo FAIL: MyOS Version %version% is too new.
-echo Trying to keep MyOS awake -
-timeout /T 0 /NOBREAK >nul
-cls
-echo FAIL: %app% Is Uncompatible
-echo FAIL: MyOS Version %version% is too new.
-echo Trying to keep MyOS awake /
-timeout /T 0 /NOBREAK >nul
-cls
-echo FAIL: %app% Is Uncompatible
-echo FAIL: MyOS Version %version% is too new.
-echo Trying to keep MyOS awake ^|
-timeout /T 0 /NOBREAK >nul
-cls
-echo FAIL: %app% Is Uncompatible
-echo FAIL: MyOS Version %version% is too new.
-echo Trying to keep MyOS awake \
-timeout /T 0 /NOBREAK >nul
-cls
-echo FAIL: %app% Is Uncompatible
-echo FAIL: MyOS Version %version% is too new.
-echo Fail: MyOS Will Shut Down To Prevent Damage
-timeout /T 2 /NOBREAK >nul
-cls
-echo.
-echo Your Device Failed to Jailbreak! Please use a newer version of %app%
-echo.
-echo Restarting MyOS in 3
-timeout /T 1 /NOBREAK >nul
-cls
-echo.
-echo Your Device Failed to Jailbreak! Please use a newer version of %app%
-echo.
-echo Restarting MyOS in 2
-timeout /T 1 /NOBREAK >nul
-cls
-echo.
-echo Your Device Failed to Jailbreak! Please use a newer version of %app%
-echo.
-echo Restarting MyOS in 1
-timeout /T 1 /NOBREAK >nul
-goto BOOT
 :shutmenu
 cls
 title MyOS - Shutdown Menu

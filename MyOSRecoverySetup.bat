@@ -131,6 +131,8 @@ echo + Added hints for COVID-19
 echo Version 2.3.0
 echo + Update was overhauled
 echo + About MyOS
+echo Version 2.4.0
+echo + 3rd Party Launcher was changed to 3rd Party Store
 echo.
 pause >nul
 echo MyOS Demo Changelog:
@@ -526,7 +528,7 @@ goto MyLiveShutdownMenu
 :onlinesetup
 echo Please type the product key for installation.
 set /p Choice=Key 
-if %Choice% == 3GTHT-0GCSM-103QA-MOM09-CREEP goto onlineinstall
+if %Choice% == XJSCK-J89XZ-9XCKS-7HX9O-YIJOP goto onlineinstall
 echo Invalid OEM key. Please rewrite the key
 timeout /T 1 /NOBREAK >nul
 goto onlinesetup
@@ -541,7 +543,7 @@ cls
 timeout /T 3 /NOBREAK >nul
 echo Please type the product key for installation.
 set /p Choice=Key 
-if %Choice% == 3GTHT-0GCSM-103QA-MOM09-CREEP goto install
+if %Choice% == XJSCK-J89XZ-9XCKS-7HX9O-YIJOP goto install
 echo Invalid OEM key. Please rewrite the key
 timeout /T 1 /NOBREAK >nul
 goto setup
