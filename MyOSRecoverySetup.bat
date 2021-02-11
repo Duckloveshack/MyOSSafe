@@ -170,7 +170,7 @@ if exist MOSBL.bat (
 	bitsadmin /transfer myDownloadJob /download /priority normal https://github.com/Duckloveshack/MyOS/raw/CHECKVERSION/CheckVersion.txt %cd%\CheckVersion.txt >nul
 	for /f "delims=;" %%a in (CheckVersion.txt) do (set CurrentVER=%%a && goto InstallInternetDownloadBLExist)
 ) else (
-	bitsadmin /transfer myDownloadJob /download /priority normal https://github.com/Duckloveshack/MyOSSafe/raw/installer/MyOSBootloaderRecovery.bat %cd%\MyOS.bat >nul
+	bitsadmin /transfer myDownloadJob /download /priority normal https://github.com/Duckloveshack/MyOSSafe/raw/installer/MyOSBootloaderRecovery.bat %cd%\MOSBL.bat >nul
 	echo (MyOS-%CurrentVER%) > mosbl.list
 	echo (%MyOSDIR%) >> mosbl2.list
 	timeout /t 1 /nobreak >nul
