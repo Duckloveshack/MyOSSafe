@@ -1,4 +1,20 @@
 @echo off
+setlocal EnableDelayedExpansion
+if not exist bootargs.myos (
+	cd %TMP%
+	MOSBL.bat
+) else (
+	findstr /m "2" bootargs.myos
+	if !ERRORLEVEL! == 0 (
+		endlocal
+		del bootargs.myos /s /q
+		goto secureboot
+	)
+)
+endlocal
+goto normalboot
+:normalboot
+del bootargs.myos /s /q
 set version=2.5.0
 set PatchID=2.5.0-full
 set Hint=The Password is %PassReal%
@@ -81,30 +97,10 @@ goto login
 :login
 title MyOS - Login
 cls
-if %GuestModeAllow% == 100 (
-	if %SafeMode% == 100 echo Welcome to MyOS. Type your username and password. [Type [1] for guest] [Type "SafeMode" for Safemode]
-)
-if %GuestModeAllow% == 100 (
-	if %SafeMode% == 123 echo Welcome to MyOS. Type your username and password. [Type [1] for guest]
-)
-if %GuestModeAllow% == 123 (
-	if %SafeMode% == 100 echo Welcome to MyOS. Type your username and password. [Type "SafeMode" for Safemode]
-)
-if %GuestModeAllow% == 123 (
-	if %SafeMode% == 123 echo Welcome to MyOS. Type your username and password.
-)
+if %GuestModeAllow% == 100 echo Welcome to MyOS. Type your username and password. [Type [1] for guest]
+if %GuestModeAllow% == 123 echo Welcome to MyOS. Type your username and password.
 set /p U=Username: 
 if %U% == 1 goto GuestCheck
-if %U% == SafeMode (
-	if %SafeMode% == 100 (
-		goto Sboot
-	)
-	if %SafeMode% == 123 (
-		echo The Safe Mode is off. Turn it on in Settings
-		timeout /T 1 /NOBREAK >nul
-		goto login
-	)
-)
 if %PasswordOn% == 100 (
 	goto password
 )
@@ -2734,6 +2730,41 @@ if %Choice% == 3 goto gdesk
 echo Invalid Option. Choose between [1], [2] or [3].
 timeout /T 1 /NOBREAK >nul
 goto gshutmenu
+:secureboot
+set SafeMode=100
+set Hint=The Password is DuckLovesHack
+set PassReal=DuckLovesHack
+set version=2.5.0
+set PatchID=2.5.0-full
+if exist configuration.myosconfig goto securebootload
+goto sboot
+:securebootload
+cmd < Configuration.myosconfig >nul
+set /p SafeMode=<%TMP%\MyOSSafeMode
+set /p PassReal=<%TMP%\MyOSPassWord
+set /p PasswordOn=<%TMP%\MyOSPasswordOn
+set /p Hint=<%TMP%\MyOSHint
+del %TMP%\MyOSMP3PRO /s /q >nul
+del %TMP%\MyOSSafeMode /s /q >nul
+del %TMP%\MyOSPassWord /s /q >nul
+del %TMP%\MyOSGuestMode /s /q >nul
+del %TMP%\MyOSGuestModeCalc /s /q >nul
+del %TMP%\MyOSGuestModeChange /s /q >nul
+del %TMP%\MyOSGuestMode3PLaunch /s /q >nul
+del %TMP%\MyOSGuestModeTextPad /s /q >nul
+del %TMP%\MyOSGuestModeSettings /s /q >nul
+del %TMP%\MyOSGuestModeReleases /s /q >nul
+del %TMP%\MyOSGuestModeMP3Player /s /q >nul
+del %TMP%\MyOSPasswordOn /s /q >nul
+del %TMP%\MyOSBioProtectCalc /s /q >nul
+del %TMP%\MyOSBioProtectChange /s /q >nul
+del %TMP%\MyOSBioProtect3PStore /s /q >nul
+del %TMP%\MyOSBioProtectTextPad /s /q >nul
+del %TMP%\MyOSBioProtectSettings /s /q >nul
+del %TMP%\MyOSBioProtectReleases /s /q >nul
+del %TMP%\MyOSBioProtectMP3Player /s /q >nul
+del %TMP%\MyOSBioProtectPassProtect /s /q >nul
+del %TMP%\MyOSHint >nul
 :sboot
 cls
 timeout /T 1 /NOBREAK >nul
